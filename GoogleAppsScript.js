@@ -80,8 +80,8 @@ function doPost(e) {
             } catch(mErr) {}
             
             sheet = newSs.getActiveSheet();
-            sheet.appendRow(["Tarih & Saat", "Ad Soyad", "Yakınlık Derecesi", "Anı Türü", "Anı Mesajı / Notu"]);
-            sheet.getRange(1, 1, 1, 5).setFontWeight("bold").setBackground("#D4AF37").setFontColor("#FFFFFF");
+            sheet.appendRow(["Tarih & Saat", "Ad Soyad", "Yakınlık Derecesi", "Anı Mesajı / Notu"]);
+            sheet.getRange(1, 1, 1, 4).setFontWeight("bold").setBackground("#D4AF37").setFontColor("#FFFFFF");
             props.setProperty("sheetId", newSs.getId());
           }
         }
@@ -91,7 +91,6 @@ function doPost(e) {
           timeStr,
           data.name || "Anonim Davetli",
           data.side || "Ortak Arkadaş",
-          "✍️ Yazılı Not",
           data.message || ""
         ]);
         

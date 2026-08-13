@@ -350,11 +350,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     type: 'wish',
                     name: name,
                     side: side,
-                    mood: mood,
                     message: message,
-                    mediaUrl: '',
-                    likes: 1,
-                    liked: true,
                     timestamp: new Date().toISOString()
                 };
 
