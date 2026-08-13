@@ -498,7 +498,8 @@ document.addEventListener('DOMContentLoaded', () => {
         mediaPreviewGrid.innerHTML = '';
         uploadedMediaFiles.forEach((item, index) => {
             const div = document.createElement('div');
-            div.className = `preview-item ${item.status === 'uploading' ? 'is-loading' : ''}`;
+            const isLoading = item.status === 'uploading' || item.status === 'sending';
+            div.className = `preview-item ${isLoading ? 'is-loading' : ''}`;
 
             let mediaContent = '';
             if (item.status === 'uploading') {
@@ -509,9 +510,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 mediaContent = `<img src="${item.dataUrl}" alt="Önizleme">`;
             }
 
-            const badgeContent = item.status === 'uploading'
-                ? `<div class="preview-badge uploading"><i class="fa-solid fa-spinner fa-spin"></i> Yüksek Kalite Hazırlanıyor...</div>`
-                : `<div class="preview-badge ready"><i class="fa-solid fa-circle-check"></i> Ultra HD Kalite Hazır</div>`;
+            let badgeContent = `<div class="preview-badge ready"><i class="fa-solid fa-circle-check"></i> Yüklemeye Hazır</div>`;
+            if (item.status === 'uploading') {
+                badgeContent = `<div class="preview-badge uploading"><i class="fa-solid fa-spinner fa-spin"></i> Hazırlanıyor...</div>`;
+            } else if (item.status === 'sending') {
+                badgeContent = `<div class="preview-badge uploading"><i class="fa-solid fa-cloud-arrow-up fa-spin"></i> Drive'a Gönderiliyor...</div>`;
+            } else if (item.status === 'sent') {
+                badgeContent = `<div class="preview-badge ready"><i class="fa-solid fa-circle-check"></i> Drive'a Yüklendi!</div>`;
+            }
 
             div.innerHTML = `
                 ${mediaContent}
@@ -576,14 +582,16 @@ document.addEventListener('DOMContentLoaded', () => {
             let failCount = 0;
 
             try {
-                const itemsToUpload = [...uploadedMediaFiles];
-                for (let i = 0; i < itemsToUpload.length; i++) {
-                    const item = itemsToUpload[i];
+                for (let i = 0; i < uploadedMediaFiles.length; i++) {
+                    const item = uploadedMediaFiles[i];
 
                     // Birden fazla fotoğraf/video yüklendiğinde Google Apps Script çakışmasını önlemek için sıralı bekleme
                     if (i > 0) {
-                        await new Promise(r => setTimeout(r, 2000));
+                        await new Promise(r => setTimeout(r, 1500));
                     }
+
+                    item.status = 'sending';
+                    renderMediaPreviews();
 
                     if (!item.dataUrl && item.file) {
                         const rawUrl = await new Promise((resolve) => {
@@ -596,7 +604,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
 
                     if (btnSubmitMedia) {
-                        btnSubmitMedia.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Google Drive'a Yükleniyor (${i + 1}/${itemsToUpload.length})...`;
+                        btnSubmitMedia.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Google Drive'a Yükleniyor (${i + 1}/${uploadedMediaFiles.length})...`;
                     }
 
                     const newMem = {
@@ -615,6 +623,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     const isUploaded = await sendToGoogleDrive(newMem);
                     if (isUploaded) {
                         successCount++;
+                        item.status = 'sent';
+                        renderMediaPreviews();
                         memories.unshift(newMem);
                         saveMemories();
                     } else {
@@ -625,7 +635,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (successCount > 0) {
                     clearMediaSelection();
                     triggerConfetti();
-                    showToast(`📸 ${successCount} adet medya Ultra HD kalitede Google Drive & Sheets'e başarıyla yüklendi!`, 'success');
+                    showToast(`📸 ${successCount} adet medya Ultra HD kalitede Google Drive'a başarıyla yüklendi!`, 'success');
                 } else {
                     showToast('❌ Fotoğraflar Google Drive\'a yüklenemedi. Lütfen internet bağlantınızı ve Drive ayarlarını kontrol edin.', 'error');
                 }
@@ -633,7 +643,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.error('Media submit error:', err);
                 if (successCount > 0) {
                     clearMediaSelection();
-                    showToast(`📸 ${successCount} adet medya Ultra HD kalitede Google Drive & Sheets'e başarıyla yüklendi!`, 'success');
+                    showToast(`📸 ${successCount} adet medya Ultra HD kalitede Google Drive'a başarıyla yüklendi!`, 'success');
                 } else {
                     showToast('❌ Yükleme sırasında bir hata oluştu.', 'error');
                 }
