@@ -1253,18 +1253,16 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // ----------------------------------------------------------------------
-    // 14. EXPORT MEMORIES (GELIN & DAMAT VAULT)
+    // 14. EXPORT MEMORIES (GELIN & DAMAT VAULT - GOOGLE DRIVE KLASÖRÜ)
     // ----------------------------------------------------------------------
-    document.getElementById('btnExportMemories').addEventListener('click', () => {
-        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(memories, null, 2));
-        const downloadAnchor = document.createElement('a');
-        downloadAnchor.setAttribute("href", dataStr);
-        downloadAnchor.setAttribute("download", `Merve_Emrullah_Dugun_Ani_Defteri_${new Date().toISOString().slice(0,10)}.json`);
-        document.body.appendChild(downloadAnchor);
-        downloadAnchor.click();
-        downloadAnchor.remove();
-        showToast('Tüm anı defteri ve medya listesi indirildi!', 'success');
-    });
+    const btnExportMemories = document.getElementById('btnExportMemories');
+    if (btnExportMemories) {
+        btnExportMemories.addEventListener('click', () => {
+            const driveFolderUrl = 'https://drive.google.com/drive/folders/13Uqo9GA0NUC2oqgclKQJnb_QSCbnj0xb?usp=drive_link';
+            window.open(driveFolderUrl, '_blank');
+            showToast('📁 Google Drive Anı Albümü klasörü açılıyor...', 'success');
+        });
+    }
 
     // ----------------------------------------------------------------------
     // 15. ADD TO CALENDAR EVENT (.ics / Google Calendar)
