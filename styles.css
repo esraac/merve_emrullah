@@ -2550,7 +2550,33 @@ button {
         color: #E2E8F0;
     }
 
-    /* Countdown Grid on Phone */
+    /* Wedding Live Banner & Countdown Grid on Phone */
+    .wedding-live-banner {
+        padding: 1.1rem 0.9rem;
+        margin: 0 auto 1.5rem auto;
+        border-radius: var(--radius-md);
+        max-width: 96%;
+    }
+
+    .live-pulse-badge {
+        font-size: 0.72rem;
+        padding: 0.25rem 0.75rem;
+        letter-spacing: 1px;
+        margin-bottom: 0.5rem;
+    }
+
+    .live-text-title {
+        font-size: 1.12rem;
+        line-height: 1.3;
+        margin-bottom: 0.35rem;
+    }
+
+    .live-text-sub {
+        font-size: 0.83rem;
+        line-height: 1.4;
+        color: #CBD5E1;
+    }
+
     .countdown-card {
         padding: 1.2rem 0.8rem;
         border-radius: var(--radius-md);
