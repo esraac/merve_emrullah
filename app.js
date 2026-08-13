@@ -662,13 +662,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // ----------------------------------------------------------------------
     // 9. GOOGLE DRIVE WEBHOOK ENGINE & SETTINGS CONTROLLER
     // ----------------------------------------------------------------------
-    const DEFAULT_DRIVE_WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbykipLeAdpgylobWEWX8D_aNSfjP45maT7SIiAHAflC3PnfBzN6UTwnCiuG-GCEorNQGQ/exec';
+    const DEFAULT_DRIVE_WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbxgGyQhYm8ldcpVNQBoB0UO4Fd7yWSVPmRT1QU-nCJ3EfSMl8FT-cRB7fDuVCNbFAd3/exec';
     const DRIVE_URL_KEY = 'merve_emrullah_drive_webhook_url';
 
     function getActiveDriveUrl() {
         const saved = localStorage.getItem(DRIVE_URL_KEY);
-        // Eğer kaydedilen adres yeni yayınlanan AKfycbykipLeAdpgylobWEWX8D adresi değilse eski önbelleği temizle
-        if (saved && !saved.includes('AKfycbykipLeAdpgylobWEWX8D_aNSfjP45maT7SIiAHAflC3PnfBzN6UTwnCiuG-GCEorNQGQ')) {
+        // Eğer kaydedilen adres yeni yayınlanan AKfycbxgGyQhYm8ldcpVNQBoB0UO4Fd7yWSVPmRT1QU adresi değilse eski önbelleği temizle
+        if (saved && !saved.includes('AKfycbxgGyQhYm8ldcpVNQBoB0UO4Fd7yWSVPmRT1QU-nCJ3EfSMl8FT-cRB7fDuVCNbFAd3')) {
             localStorage.removeItem(DRIVE_URL_KEY);
             return DEFAULT_DRIVE_WEBHOOK_URL;
         }
