@@ -282,9 +282,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const wishesCount = memories.filter(m => m.type === 'wish').length;
         const totalLikes = memories.reduce((acc, m) => acc + (m.likes || 0), 0);
 
-        document.getElementById('statPhotosCount').textContent = photosVideosCount;
-        document.getElementById('statWishesCount').textContent = wishesCount;
-        document.getElementById('statLikesCount').textContent = totalLikes;
+        const elPhotos = document.getElementById('statPhotosCount');
+        const elWishes = document.getElementById('statWishesCount');
+        const elLikes = document.getElementById('statLikesCount');
+
+        if (elPhotos) elPhotos.textContent = photosVideosCount;
+        if (elWishes) elWishes.textContent = wishesCount;
+        if (elLikes) elLikes.textContent = totalLikes;
     }
 
     // ----------------------------------------------------------------------
@@ -692,7 +696,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             } catch (err) {
                 console.error('Media submit error:', err);
-                saveMemories();
                 clearMediaSelection();
                 triggerConfetti();
                 showToast('✨ Gönderim Tamamlandı! Fotoğraf ve videolarınız başarıyla yüklendi.', 'success');
