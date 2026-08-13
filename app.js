@@ -683,7 +683,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 document.title = '✅ Gönderim Tamamlandı! - Merve & Emrullah';
                 sendSystemNotification('Merve & Emrullah Düğün Anıları', '✨ Gönderim Tamamlandı! Fotoğraf ve videolarınız başarıyla yüklendi.');
-                setTimeout(() => { document.title = defaultPageTitle; }, 5000);
 
                 if (successCount > 0) {
                     triggerConfetti();
@@ -703,6 +702,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     btnSubmitMedia.disabled = false;
                     btnSubmitMedia.innerHTML = originalBtnText;
                 }
+                setTimeout(() => { document.title = defaultPageTitle; }, 5000);
             }
         });
     }
