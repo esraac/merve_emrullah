@@ -17,6 +17,11 @@
  */
 
 function doPost(e) {
+  var lock = LockService.getScriptLock();
+  try {
+    lock.waitLock(15000);
+  } catch (lErr) {}
+
   try {
     if (!e || !e.postData || !e.postData.contents) {
       return ContentService.createTextOutput(JSON.stringify({
@@ -82,9 +87,18 @@ function doPost(e) {
         var ext = "jpg";
         var typePrefix = "Foto";
         
-        if (contentType.indexOf("video") !== -1) {
+        if (contentType.indexOf("video") !== -1 || data.type === "video") {
           ext = "mp4";
           typePrefix = "Video";
+          if (contentType.indexOf("quicktime") !== -1 || contentType.indexOf("mov") !== -1) {
+            ext = "mov";
+          } else if (contentType.indexOf("webm") !== -1) {
+            ext = "webm";
+          } else if (contentType.indexOf("3gp") !== -1) {
+            ext = "3gp";
+          } else if (contentType.indexOf("mkv") !== -1) {
+            ext = "mkv";
+          }
         } else if (contentType.indexOf("png") !== -1) {
           ext = "png";
         } else if (contentType.indexOf("webp") !== -1) {
@@ -141,6 +155,8 @@ function doPost(e) {
       status: "error",
       message: error.toString()
     })).setMimeType(ContentService.MimeType.JSON);
+  } finally {
+    try { lock.releaseLock(); } catch(e) {}
   }
 }
 

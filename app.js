@@ -577,6 +577,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 for (let i = 0; i < itemsToUpload.length; i++) {
                     const item = itemsToUpload[i];
 
+                    // Birden fazla fotoğraf/video yüklendiğinde Google Apps Script çakışmasını önlemek için sıralı bekleme
+                    if (i > 0) {
+                        await new Promise(r => setTimeout(r, 2000));
+                    }
+
                     if (!item.dataUrl && item.file) {
                         const rawUrl = await new Promise((resolve) => {
                             const r = new FileReader();
@@ -596,7 +601,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         type: item.type,
                         name: name,
                         side: side,
-                        mood: '📸 Medya Anısı',
+                        mood: item.type === 'video' ? '🎥 Video Anısı' : '📸 Fotoğraf Anısı',
                         message: caption || (item.type === 'video' ? 'Düğünden harika bir video anı!' : 'Düğünden özel bir fotoğraf karesi!'),
                         mediaUrl: item.dataUrl,
                         likes: 1,
@@ -617,7 +622,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (successCount > 0) {
                     clearMediaSelection();
                     triggerConfetti();
-                    showToast('📸 Fotoğrafınız Ultra HD kalitede Google Drive & Sheets\'e başarıyla yüklendi!', 'success');
+                    showToast(`📸 ${successCount} adet medya Ultra HD kalitede Google Drive & Sheets'e başarıyla yüklendi!`, 'success');
                 } else {
                     showToast('❌ Fotoğraflar Google Drive\'a yüklenemedi. Lütfen internet bağlantınızı ve Drive ayarlarını kontrol edin.', 'error');
                 }
@@ -625,7 +630,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.error('Media submit error:', err);
                 if (successCount > 0) {
                     clearMediaSelection();
-                    showToast('📸 Fotoğrafınız Ultra HD kalitede Google Drive & Sheets\'e başarıyla yüklendi!', 'success');
+                    showToast(`📸 ${successCount} adet medya Ultra HD kalitede Google Drive & Sheets'e başarıyla yüklendi!`, 'success');
                 } else {
                     showToast('❌ Yükleme sırasında bir hata oluştu.', 'error');
                 }
