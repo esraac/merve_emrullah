@@ -578,6 +578,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 btnSubmitMedia.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Google Drive'a Yükleniyor...`;
             }
 
+            requestNotificationPermission();
+
             let successCount = 0;
             let failCount = 0;
 
@@ -610,8 +612,15 @@ document.addEventListener('DOMContentLoaded', () => {
                     item.status = 'sending';
                     renderMediaPreviews();
 
+                    const statusText = `Google Drive'a Yükleniyor (${i + 1}/${itemsToUpload.length})...`;
                     if (btnSubmitMedia) {
-                        btnSubmitMedia.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Google Drive'a Yükleniyor (${i + 1}/${itemsToUpload.length})...`;
+                        btnSubmitMedia.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> ${statusText}`;
+                    }
+
+                    // Kullanıcı sekmeyi değiştirdiğinde veya mobil arka plana aldığında bildirim ve sayfa başlığı güncelle
+                    document.title = `⏳ (${i + 1}/${itemsToUpload.length}) Yükleniyor... - Merve & Emrullah`;
+                    if (document.hidden) {
+                        sendSystemNotification('Merve & Emrullah Düğün Anıları', `📸 (${i + 1}/${itemsToUpload.length}) Anılarınız arka planda Google Drive'a yükleniyor...`);
                     }
 
                     try {
@@ -643,6 +652,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 saveMemories();
 
+                document.title = '✅ Yükleme Tamamlandı! - Merve & Emrullah';
+                sendSystemNotification('Merve & Emrullah Düğün Anıları', `🎉 ${successCount} adet anı Google Drive'a başarıyla yüklendi!`);
+                setTimeout(() => { document.title = defaultPageTitle; }, 5000);
+
                 if (successCount > 0) {
                     clearMediaSelection();
                     triggerConfetti();
@@ -662,6 +675,35 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
         });
+    }
+
+    // ----------------------------------------------------------------------
+    // MOBİL & TARAYICI BİLDİRİM / SAYFA BAŞLIĞI DESTEĞİ
+    // ----------------------------------------------------------------------
+    const defaultPageTitle = document.title || 'Merve & Emrullah Düğün Anıları';
+
+    async function requestNotificationPermission() {
+        if ('Notification' in window && Notification.permission === 'default') {
+            try {
+                await Notification.requestPermission();
+            } catch (e) {}
+        }
+    }
+
+    function sendSystemNotification(title, message) {
+        if ('Notification' in window && Notification.permission === 'granted') {
+            try {
+                const notif = new Notification(title, {
+                    body: message,
+                    tag: 'wedding-upload-status',
+                    renotify: true
+                });
+                notif.onclick = () => {
+                    window.focus();
+                    notif.close();
+                };
+            } catch (e) {}
+        }
     }
 
     // ----------------------------------------------------------------------
