@@ -459,37 +459,37 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             const isVideo = file.type.startsWith('video/');
+            const objectUrl = isVideo ? URL.createObjectURL(file) : '';
 
             const itemObj = {
                 id: 'media_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6),
                 file: file,
                 dataUrl: '',
+                previewUrl: objectUrl,
                 type: isVideo ? 'video' : 'photo',
-                status: 'uploading'
+                status: isVideo ? 'ready' : 'uploading'
             };
 
             uploadedMediaFiles.push(itemObj);
             renderMediaPreviews();
 
-            const reader = new FileReader();
-            reader.onload = async (evt) => {
-                const rawUrl = evt.target.result || '';
-                if (!isVideo) {
-                    // Ultra HD Kalitede Hızlı & Güvenli Yükleme
+            if (!isVideo) {
+                const reader = new FileReader();
+                reader.onload = async (evt) => {
+                    const rawUrl = evt.target.result || '';
                     itemObj.dataUrl = await compressImageIfNeeded(file, rawUrl);
-                } else {
-                    itemObj.dataUrl = rawUrl;
-                }
-                itemObj.status = 'ready';
-                renderMediaPreviews();
-            };
-            reader.onerror = () => {
-                showToast('Dosya okunurken bir hata oluştu.', 'error');
-                const idx = uploadedMediaFiles.indexOf(itemObj);
-                if (idx > -1) uploadedMediaFiles.splice(idx, 1);
-                renderMediaPreviews();
-            };
-            reader.readAsDataURL(file);
+                    itemObj.previewUrl = itemObj.dataUrl;
+                    itemObj.status = 'ready';
+                    renderMediaPreviews();
+                };
+                reader.onerror = () => {
+                    showToast('Dosya okunurken bir hata oluştu.', 'error');
+                    const idx = uploadedMediaFiles.indexOf(itemObj);
+                    if (idx > -1) uploadedMediaFiles.splice(idx, 1);
+                    renderMediaPreviews();
+                };
+                reader.readAsDataURL(file);
+            }
         });
     }
 
@@ -505,9 +505,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (item.status === 'uploading') {
                 mediaContent = `<div class="preview-placeholder-bg"><i class="fa-solid fa-cloud-arrow-up fa-pulse"></i></div>`;
             } else if (item.type === 'video') {
-                mediaContent = `<video src="${item.dataUrl}"></video>`;
+                mediaContent = `<video src="${item.previewUrl || item.dataUrl}#t=0.5" preload="metadata"></video><div class="media-play-overlay"><i class="fa-solid fa-circle-play"></i></div>`;
             } else {
-                mediaContent = `<img src="${item.dataUrl}" alt="Önizleme">`;
+                mediaContent = `<img src="${item.previewUrl || item.dataUrl}" alt="Önizleme">`;
             }
 
             let badgeContent = `<div class="preview-badge ready"><i class="fa-solid fa-circle-check"></i> Yüklemeye Hazır</div>`;
