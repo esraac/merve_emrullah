@@ -664,12 +664,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 saveMemories();
 
+                // Seçili fotoğrafları ve önizleme kutularını ANINDA ekrandan sil ve sıfırla
+                clearMediaSelection();
+
                 document.title = '✅ Yükleme Tamamlandı! - Merve & Emrullah';
                 sendSystemNotification('Merve & Emrullah Düğün Anıları', `🎉 ${successCount} adet anı Google Drive'a başarıyla yüklendi!`);
                 setTimeout(() => { document.title = defaultPageTitle; }, 5000);
 
                 if (successCount > 0) {
-                    clearMediaSelection();
                     triggerConfetti();
                     showToast(`📸 ${successCount} adet medya Google Drive'a başarıyla yüklendi!`, 'success');
                 } else {
