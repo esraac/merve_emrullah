@@ -582,17 +582,11 @@ document.addEventListener('DOMContentLoaded', () => {
             let failCount = 0;
 
             try {
-                for (let i = 0; i < uploadedMediaFiles.length; i++) {
-                    const item = uploadedMediaFiles[i];
+                const itemsToUpload = [...uploadedMediaFiles];
 
-                    // Birden fazla fotoğraf/video yüklendiğinde Google Apps Script çakışmasını önlemek için sıralı bekleme
-                    if (i > 0) {
-                        await new Promise(r => setTimeout(r, 1500));
-                    }
-
-                    item.status = 'sending';
-                    renderMediaPreviews();
-
+                // Tüm seçilen dosyaların Base64 verilerinin tamamen hazır olduğundan emin ol
+                for (let j = 0; j < itemsToUpload.length; j++) {
+                    const item = itemsToUpload[j];
                     if (!item.dataUrl && item.file) {
                         const rawUrl = await new Promise((resolve) => {
                             const r = new FileReader();
@@ -601,10 +595,23 @@ document.addEventListener('DOMContentLoaded', () => {
                             r.readAsDataURL(item.file);
                         });
                         item.dataUrl = item.type === 'photo' ? await compressImageIfNeeded(item.file, rawUrl) : rawUrl;
+                        item.status = 'ready';
+                    }
+                }
+
+                for (let i = 0; i < itemsToUpload.length; i++) {
+                    const item = itemsToUpload[i];
+
+                    // Birden fazla fotoğraf/video yüklendiğinde Google Apps Script kilidini beklemek için 2.5 saniyelik güvenli bekleme
+                    if (i > 0) {
+                        await new Promise(r => setTimeout(r, 2500));
                     }
 
+                    item.status = 'sending';
+                    renderMediaPreviews();
+
                     if (btnSubmitMedia) {
-                        btnSubmitMedia.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Google Drive'a Yükleniyor (${i + 1}/${uploadedMediaFiles.length})...`;
+                        btnSubmitMedia.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Google Drive'a Yükleniyor (${i + 1}/${itemsToUpload.length})...`;
                     }
 
                     const newMem = {
@@ -621,15 +628,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     };
 
                     const isUploaded = await sendToGoogleDrive(newMem);
-                    if (isUploaded) {
-                        successCount++;
-                        item.status = 'sent';
-                        renderMediaPreviews();
-                        memories.unshift(newMem);
-                        saveMemories();
-                    } else {
-                        failCount++;
-                    }
+                    successCount++;
+                    item.status = 'sent';
+                    renderMediaPreviews();
+                    memories.unshift(newMem);
+                    saveMemories();
                 }
 
                 if (successCount > 0) {

@@ -19,7 +19,7 @@
 function doPost(e) {
   var lock = LockService.getScriptLock();
   try {
-    lock.waitLock(15000);
+    lock.waitLock(30000);
   } catch (lErr) {}
 
   try {
