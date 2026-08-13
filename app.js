@@ -531,13 +531,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 mediaContent = `<img src="${item.previewUrl || item.dataUrl}" alt="Önizleme">`;
             }
 
-            let badgeContent = `<div class="preview-badge ready"><i class="fa-solid fa-circle-check"></i> Yüklemeye Hazır</div>`;
+            let badgeContent = `<div class="preview-badge ready" title="Yüklemeye Hazır"><i class="fa-solid fa-check"></i></div>`;
             if (item.status === 'uploading') {
-                badgeContent = `<div class="preview-badge uploading"><i class="fa-solid fa-spinner fa-spin"></i> Hazırlanıyor...</div>`;
+                badgeContent = `<div class="preview-badge uploading" title="Hazırlanıyor..."><i class="fa-solid fa-spinner fa-spin"></i></div>`;
             } else if (item.status === 'sending') {
-                badgeContent = `<div class="preview-badge uploading"><i class="fa-solid fa-cloud-arrow-up fa-spin"></i> Drive'a Gönderiliyor...</div>`;
+                badgeContent = `<div class="preview-badge uploading" title="Drive'a Gönderiliyor..."><i class="fa-solid fa-cloud-arrow-up fa-spin"></i></div>`;
             } else if (item.status === 'sent') {
-                badgeContent = `<div class="preview-badge ready"><i class="fa-solid fa-circle-check"></i> Drive'a Yüklendi!</div>`;
+                badgeContent = `<div class="preview-badge ready" title="Drive'a Yüklendi!"><i class="fa-solid fa-check-double"></i></div>`;
             }
 
             div.innerHTML = `
