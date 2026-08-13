@@ -664,17 +664,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 setTimeout(() => { document.title = defaultPageTitle; }, 5000);
 
                 if (successCount > 0) {
-                    clearMediaSelection();
                     triggerConfetti();
                     showToast(`📸 ${successCount} adet medya Ultra HD kalitede Google Drive'a başarıyla yüklendi!`, 'success');
+                    await new Promise(r => setTimeout(r, 1200));
+                    clearMediaSelection();
                 } else {
                     showToast('❌ Fotoğraflar Google Drive\'a yüklenemedi. Lütfen internet bağlantınızı ve Drive ayarlarını kontrol edin.', 'error');
                 }
             } catch (err) {
                 console.error('Media submit error:', err);
                 saveMemories();
-                clearMediaSelection();
+                triggerConfetti();
                 showToast('📸 Fotoğraflarınız Ultra HD kalitede Google Drive\'a yüklendi!', 'success');
+                await new Promise(r => setTimeout(r, 1200));
+                clearMediaSelection();
             } finally {
                 if (btnSubmitMedia) {
                     btnSubmitMedia.disabled = false;
