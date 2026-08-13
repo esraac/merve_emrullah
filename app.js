@@ -364,6 +364,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 saveMemories();
 
                 if (formWish) formWish.reset();
+                const wishName = document.getElementById('wishName');
+                if (wishName) wishName.value = '';
+                const wishMessage = document.getElementById('wishMessage');
+                if (wishMessage) wishMessage.value = '';
+                const wishSide = document.getElementById('wishSide');
+                if (wishSide) wishSide.value = 'Ortak Arkadaş';
+
                 triggerConfetti();
                 showToast('✨ Anı notunuz Google Sheets tablosuna ve galeriye başarıyla kaydedildi!', 'success');
             } catch (err) {
