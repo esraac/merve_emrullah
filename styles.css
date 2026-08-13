@@ -2498,82 +2498,84 @@ button {
     }
 
     .hero-section {
-        padding: 6.5rem 1rem 2.5rem 1rem;
+        padding: 4.8rem 0.8rem 1.8rem 0.8rem;
         background-position: center 30% !important;
     }
 
     .hero-badge {
-        font-size: 0.78rem;
-        padding: 0.4rem 0.9rem;
+        font-size: 0.72rem;
+        padding: 0.3rem 0.75rem;
+        margin-bottom: 0.5rem;
     }
 
     .hero-title {
-        font-size: 1.85rem;
+        font-size: 1.75rem;
         letter-spacing: -0.5px;
+        margin-bottom: 0.2rem;
     }
 
     .hero-subtitle {
-        font-size: 0.95rem;
-        line-height: 1.5;
-        margin-bottom: 1rem;
+        font-size: 0.9rem;
+        line-height: 1.4;
+        margin-bottom: 0.5rem;
     }
 
     /* Romantic Quote Ribbon on Mobile */
     .stats-bar {
-        margin-top: -1.5rem;
-        margin-bottom: 1.5rem;
+        margin-top: -1.2rem;
+        margin-bottom: 1.2rem;
     }
 
     .romantic-quote-container {
-        padding: 0.55rem 1.0rem;
-        gap: 0.45rem;
-        max-width: 90%;
+        padding: 0.5rem 0.8rem;
+        gap: 0.4rem;
+        max-width: 92%;
         margin: 0 auto;
     }
 
     .romantic-quote-text {
-        font-size: 0.92rem;
-        line-height: 1.35;
+        font-size: 0.88rem;
+        line-height: 1.3;
     }
 
     .quote-sparkle-left,
     .quote-sparkle-right {
-        font-size: 0.82rem;
+        font-size: 0.78rem;
     }
 
     .hero-description {
-        font-size: 0.9rem;
-        line-height: 1.65;
-        margin: 0 auto 1.5rem auto;
-        padding: 0 0.4rem;
-        max-width: 96%;
+        font-size: 0.82rem;
+        line-height: 1.45;
+        margin: 0 auto 0.8rem auto;
+        padding: 0 0.2rem;
+        max-width: 98%;
         color: #E2E8F0;
     }
 
     /* Wedding Live Banner & Countdown Grid on Phone */
     .wedding-live-banner {
-        padding: 1.1rem 0.9rem;
-        margin: 0 auto 1.5rem auto;
-        border-radius: var(--radius-md);
-        max-width: 96%;
+        padding: 0.7rem 0.7rem;
+        margin: 0 auto 1rem auto;
+        border-radius: 12px;
+        max-width: 98%;
     }
 
     .live-pulse-badge {
-        font-size: 0.72rem;
-        padding: 0.25rem 0.75rem;
-        letter-spacing: 1px;
-        margin-bottom: 0.5rem;
+        font-size: 0.65rem;
+        padding: 0.15rem 0.6rem;
+        letter-spacing: 0.8px;
+        margin-bottom: 0.3rem;
     }
 
     .live-text-title {
-        font-size: 1.12rem;
-        line-height: 1.3;
-        margin-bottom: 0.35rem;
+        font-size: 0.95rem;
+        line-height: 1.25;
+        margin-bottom: 0.25rem;
     }
 
     .live-text-sub {
-        font-size: 0.83rem;
-        line-height: 1.4;
+        font-size: 0.78rem;
+        line-height: 1.35;
         color: #CBD5E1;
     }
 
