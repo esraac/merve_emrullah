@@ -74,7 +74,11 @@ function doPost(e) {
           if (!sheet) {
             var newSs = SpreadsheetApp.create(sheetName);
             var sheetFile = DriveApp.getFileById(newSs.getId());
-            sheetFile.moveTo(mainFolder);
+            try {
+              mainFolder.addFile(sheetFile);
+              DriveApp.getRootFolder().removeFile(sheetFile);
+            } catch(mErr) {}
+            
             sheet = newSs.getActiveSheet();
             sheet.appendRow(["Tarih & Saat", "Ad Soyad", "Yakınlık Derecesi", "Anı Türü", "Anı Mesajı / Notu"]);
             sheet.getRange(1, 1, 1, 5).setFontWeight("bold").setBackground("#D4AF37").setFontColor("#FFFFFF");

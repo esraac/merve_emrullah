@@ -338,10 +338,10 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             const btnSubmitWish = formWish.querySelector('button[type="submit"]');
-            const originalBtnText = btnSubmitWish ? btnSubmitWish.innerHTML : '';
+            const originalBtnText = btnSubmitWish ? btnSubmitWish.innerHTML : '<i class="fa-solid fa-paper-plane"></i> Anı Notunu Gönder';
             if (btnSubmitWish) {
                 btnSubmitWish.disabled = true;
-                btnSubmitWish.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Google Drive'a Yükleniyor...`;
+                btnSubmitWish.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Google Sheets'e Kaydediliyor...`;
             }
 
             try {
@@ -352,20 +352,24 @@ document.addEventListener('DOMContentLoaded', () => {
                     side: side,
                     mood: mood,
                     message: message,
-                    mediaUrl: null,
+                    mediaUrl: '',
                     likes: 1,
                     liked: true,
                     timestamp: new Date().toISOString()
                 };
 
+                // Gönderim gerçekleşirken butonun görünür loading aşamasını göstermek için en az 800ms bekle
+                const drivePromise = sendToGoogleDrive(newMemory);
+                const delayPromise = new Promise(resolve => setTimeout(resolve, 800));
+                
+                await Promise.all([drivePromise, delayPromise]);
+
                 memories.unshift(newMemory);
                 saveMemories();
 
-                await sendToGoogleDrive(newMemory);
-
                 if (formWish) formWish.reset();
                 triggerConfetti();
-                showToast('✨ Anı notunuz hem Google Drive & Sheets\'e hem de galeriye başarıyla kaydedildi!', 'success');
+                showToast('✨ Anı notunuz Google Sheets tablosuna ve galeriye başarıyla kaydedildi!', 'success');
             } catch (err) {
                 console.error('Wish submit error:', err);
                 showToast('✨ Anı notunuz galeriye kaydedildi!', 'success');
