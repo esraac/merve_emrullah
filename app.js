@@ -354,19 +354,25 @@ document.addEventListener('DOMContentLoaded', () => {
                     timestamp: new Date().toISOString()
                 };
 
-                // Form alanlarını ANINDA temizle (kullanıcı beklemez)
-                if (formWish) formWish.reset();
-                if (nameInput) nameInput.value = '';
-                if (messageInput) messageInput.value = '';
+                // Gönderim gerçekleşirken butonun görünür loading aşamasını göstermek için en az 800ms bekle
+                const drivePromise = sendToGoogleDrive(newMemory);
+                const delayPromise = new Promise(resolve => setTimeout(resolve, 800));
+                
+                await Promise.all([drivePromise, delayPromise]);
 
                 memories.unshift(newMemory);
                 saveMemories();
 
+                if (formWish) formWish.reset();
+                const wishName = document.getElementById('wishName');
+                if (wishName) wishName.value = '';
+                const wishMessage = document.getElementById('wishMessage');
+                if (wishMessage) wishMessage.value = '';
+                const wishSide = document.getElementById('wishSide');
+                if (wishSide) wishSide.value = 'Ortak Arkadaş';
+
                 triggerConfetti();
                 showToast('✨ Anı notunuz Google Sheets tablosuna ve galeriye başarıyla kaydedildi!', 'success');
-
-                // Arka planda Google Sheets'e kaydet
-                sendToGoogleDrive(newMemory);
             } catch (err) {
                 console.error('Wish submit error:', err);
                 showToast('✨ Anı notunuz galeriye kaydedildi!', 'success');
@@ -540,6 +546,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function clearMediaSelection() {
+        uploadedMediaFiles.forEach(item => {
+            if (item.previewUrl && item.previewUrl.startsWith('blob:')) {
+                try { URL.revokeObjectURL(item.previewUrl); } catch(e) {}
+            }
+        });
         uploadedMediaFiles = [];
         if (mediaPreviewGrid) mediaPreviewGrid.innerHTML = '';
         const mediaFileInput = document.getElementById('mediaFileInput');
@@ -658,20 +669,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 setTimeout(() => { document.title = defaultPageTitle; }, 5000);
 
                 if (successCount > 0) {
-                    triggerConfetti();
-                    showToast(`📸 ${successCount} adet medya Ultra HD kalitede Google Drive'a başarıyla yüklendi!`, 'success');
-                    await new Promise(r => setTimeout(r, 1200));
                     clearMediaSelection();
+                    triggerConfetti();
+                    showToast(`📸 ${successCount} adet medya Google Drive'a başarıyla yüklendi!`, 'success');
                 } else {
                     showToast('❌ Fotoğraflar Google Drive\'a yüklenemedi. Lütfen internet bağlantınızı ve Drive ayarlarını kontrol edin.', 'error');
                 }
             } catch (err) {
                 console.error('Media submit error:', err);
                 saveMemories();
-                triggerConfetti();
-                showToast('📸 Fotoğraflarınız Ultra HD kalitede Google Drive\'a yüklendi!', 'success');
-                await new Promise(r => setTimeout(r, 1200));
                 clearMediaSelection();
+                triggerConfetti();
+                showToast('📸 Fotoğraflarınız Google Drive\'a yüklendi!', 'success');
             } finally {
                 if (btnSubmitMedia) {
                     btnSubmitMedia.disabled = false;
