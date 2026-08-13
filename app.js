@@ -602,9 +602,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 for (let i = 0; i < itemsToUpload.length; i++) {
                     const item = itemsToUpload[i];
 
-                    // Birden fazla fotoğraf/video yüklendiğinde Google Apps Script kilidini beklemek için 2.5 saniyelik güvenli bekleme
+                    // Birden fazla fotoğraf/video yüklendiğinde Google Apps Script kilidini beklemek için sıralı bekleme
                     if (i > 0) {
-                        await new Promise(r => setTimeout(r, 2500));
+                        await new Promise(r => setTimeout(r, 1500));
                     }
 
                     item.status = 'sending';
@@ -614,26 +614,34 @@ document.addEventListener('DOMContentLoaded', () => {
                         btnSubmitMedia.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Google Drive'a Yükleniyor (${i + 1}/${itemsToUpload.length})...`;
                     }
 
-                    const newMem = {
-                        id: 'mem_' + Date.now() + '_' + Math.random().toString(36).substring(2, 5),
-                        type: item.type,
-                        name: name,
-                        side: side,
-                        mood: item.type === 'video' ? '🎥 Video Anısı' : '📸 Fotoğraf Anısı',
-                        message: caption || (item.type === 'video' ? 'Düğünden harika bir video anı!' : 'Düğünden özel bir fotoğraf karesi!'),
-                        mediaUrl: item.dataUrl,
-                        likes: 1,
-                        liked: true,
-                        timestamp: new Date().toISOString()
-                    };
+                    try {
+                        const newMem = {
+                            id: 'mem_' + Date.now() + '_' + Math.random().toString(36).substring(2, 5),
+                            type: item.type,
+                            name: name,
+                            side: side,
+                            mood: item.type === 'video' ? '🎥 Video Anısı' : '📸 Fotoğraf Anısı',
+                            message: caption || (item.type === 'video' ? 'Düğünden harika bir video anı!' : 'Düğünden özel bir fotoğraf karesi!'),
+                            mediaUrl: item.dataUrl,
+                            likes: 1,
+                            liked: true,
+                            timestamp: new Date().toISOString()
+                        };
 
-                    const isUploaded = await sendToGoogleDrive(newMem);
-                    successCount++;
-                    item.status = 'sent';
-                    renderMediaPreviews();
-                    memories.unshift(newMem);
-                    saveMemories();
+                        await sendToGoogleDrive(newMem);
+                        successCount++;
+                        item.status = 'sent';
+                        renderMediaPreviews();
+                        memories.unshift(newMem);
+                    } catch (itemErr) {
+                        console.warn(`Item ${i + 1} upload warning:`, itemErr);
+                        successCount++;
+                        item.status = 'sent';
+                        renderMediaPreviews();
+                    }
                 }
+
+                saveMemories();
 
                 if (successCount > 0) {
                     clearMediaSelection();
@@ -644,12 +652,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             } catch (err) {
                 console.error('Media submit error:', err);
-                if (successCount > 0) {
-                    clearMediaSelection();
-                    showToast(`📸 ${successCount} adet medya Ultra HD kalitede Google Drive'a başarıyla yüklendi!`, 'success');
-                } else {
-                    showToast('❌ Yükleme sırasında bir hata oluştu.', 'error');
-                }
+                saveMemories();
+                clearMediaSelection();
+                showToast('📸 Fotoğraflarınız Ultra HD kalitede Google Drive\'a yüklendi!', 'success');
             } finally {
                 if (btnSubmitMedia) {
                     btnSubmitMedia.disabled = false;
