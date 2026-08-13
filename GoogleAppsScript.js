@@ -32,31 +32,93 @@ function doPost(e) {
 
     var data = JSON.parse(e.postData.contents);
     var props = PropertiesService.getScriptProperties();
-    
-    // 1. Google Drive Ana Klasörünü Ön Bellekten Işık Hızında Al (Properties Cache)
-    var mainFolder;
-    var folderId = props.getProperty("folderId");
-    if (folderId) {
-      try {
-        mainFolder = DriveApp.getFolderById(folderId);
-      } catch(fErr) {}
-    }
-    if (!mainFolder) {
-      var folderName = "Merve & Emrullah Düğün Anıları";
-      var folders = DriveApp.getFoldersByName(folderName);
-      if (folders.hasNext()) {
-        mainFolder = folders.next();
-      } else {
-        mainFolder = DriveApp.createFolder(folderName);
-      }
-      props.setProperty("folderId", mainFolder.getId());
-    }
-
     var driveFileUrl = "";
 
-    // 2. Medya Dosyasını (Fotoğraf/Video) Google Drive Klasörüne Anında Kaydet
+    // 1. Yazılı Anı Notu Gönderildiyse ➔ Yalnızca Google Sheets Tablosuna Yaz (Drive'da Ayrı .txt Belgesi Oluşturma)
+    if (data.type === "wish" || (data.message && !data.mediaUrl)) {
+      try {
+        var sheet;
+        var sheetId = props.getProperty("sheetId");
+        if (sheetId) {
+          try {
+            var ssCached = SpreadsheetApp.openById(sheetId);
+            sheet = ssCached.getActiveSheet();
+          } catch(sErr) {}
+        }
+        if (!sheet) {
+          // Google Drive Ana Klasörünü Bul/Oluştur
+          var mainFolder;
+          var folderId = props.getProperty("folderId");
+          if (folderId) {
+            try { mainFolder = DriveApp.getFolderById(folderId); } catch(fErr) {}
+          }
+          if (!mainFolder) {
+            var folderName = "Merve & Emrullah Düğün Anıları";
+            var folders = DriveApp.getFoldersByName(folderName);
+            if (folders.hasNext()) mainFolder = folders.next();
+            else mainFolder = DriveApp.createFolder(folderName);
+            props.setProperty("folderId", mainFolder.getId());
+          }
+
+          var sheetName = "Düğün Anı Defteri & Dilekler";
+          var files = mainFolder.getFilesByName(sheetName);
+          while (files.hasNext()) {
+            var existingFile = files.next();
+            if (!existingFile.isTrashed() && existingFile.getMimeType() === MimeType.GOOGLE_SHEETS) {
+              var ss = SpreadsheetApp.openById(existingFile.getId());
+              sheet = ss.getActiveSheet();
+              props.setProperty("sheetId", existingFile.getId());
+              break;
+            }
+          }
+          if (!sheet) {
+            var newSs = SpreadsheetApp.create(sheetName);
+            var sheetFile = DriveApp.getFileById(newSs.getId());
+            sheetFile.moveTo(mainFolder);
+            sheet = newSs.getActiveSheet();
+            sheet.appendRow(["Tarih & Saat", "Ad Soyad", "Yakınlık Derecesi", "Anı Türü", "Anı Mesajı / Notu"]);
+            sheet.getRange(1, 1, 1, 5).setFontWeight("bold").setBackground("#D4AF37").setFontColor("#FFFFFF");
+            props.setProperty("sheetId", newSs.getId());
+          }
+        }
+
+        var timeStr = Utilities.formatDate(new Date(), "GMT+3", "dd.MM.yyyy HH:mm:ss");
+        sheet.appendRow([
+          timeStr,
+          data.name || "Anonim Davetli",
+          data.side || "Ortak Arkadaş",
+          "✍️ Yazılı Not",
+          data.message || ""
+        ]);
+        
+        return ContentService.createTextOutput(JSON.stringify({
+          status: "success",
+          message: "Yazılı not başarıyla Google Sheets tablosuna kaydedildi!"
+        })).setMimeType(ContentService.MimeType.JSON);
+      } catch (sheetErr) {
+        return ContentService.createTextOutput(JSON.stringify({
+          status: "error",
+          message: "Tablo kayıt hatası: " + sheetErr.toString()
+        })).setMimeType(ContentService.MimeType.JSON);
+      }
+    }
+
+    // 2. Medya Dosyası (Fotoğraf/Video) Gönderildiyse ➔ Yalnızca Google Drive Klasörüne Kaydet (Tabloya Asla Yazma)
     if (data.mediaUrl && typeof data.mediaUrl === "string" && data.mediaUrl.startsWith("data:")) {
       try {
+        var mainFolderMedia;
+        var folderIdMedia = props.getProperty("folderId");
+        if (folderIdMedia) {
+          try { mainFolderMedia = DriveApp.getFolderById(folderIdMedia); } catch(fErr) {}
+        }
+        if (!mainFolderMedia) {
+          var folderNameMedia = "Merve & Emrullah Düğün Anıları";
+          var foldersMedia = DriveApp.getFoldersByName(folderNameMedia);
+          if (foldersMedia.hasNext()) mainFolderMedia = foldersMedia.next();
+          else mainFolderMedia = DriveApp.createFolder(folderNameMedia);
+          props.setProperty("folderId", mainFolderMedia.getId());
+        }
+
         var parts = data.mediaUrl.split(",");
         var contentType = parts[0].split(";")[0].replace("data:", "");
         var base64Data = parts[1];
@@ -80,81 +142,16 @@ function doPost(e) {
         var fileName = "Merve_Emrullah_" + safeName + "_" + typePrefix + "_" + Date.now() + "." + ext;
         decodedBlob.setName(fileName);
         
-        var file = mainFolder.createFile(decodedBlob);
+        var file = mainFolderMedia.createFile(decodedBlob);
         driveFileUrl = file.getUrl();
       } catch (mediaErr) {
         driveFileUrl = "Drive Yükleme Uyarısı: " + mediaErr.toString();
       }
-    } else if (data.message) {
-      // 3. Yazılı Notlar İçin Metin Belgesi (.txt) Oluştur
-      try {
-        var safeNameNote = (data.name || "Anonim").replace(/[^a-zA-Z0-9_\-]/g, "_");
-        var noteFileName = "Merve_Emrullah_" + safeNameNote + "_YaziliNot_" + Date.now() + ".txt";
-        var noteContent = "=========================================\n" +
-                          "MERVE & EMRULLAH DÜĞÜN ANI DEFTERİ NOTU\n" +
-                          "=========================================\n\n" +
-                          "Gönderen: " + (data.name || "Anonim Davetli") + "\n" +
-                          "Yakınlık Derecesi: " + (data.side || "Ortak Arkadaş") + "\n" +
-                          "Tarih & Saat: " + Utilities.formatDate(new Date(), "GMT+3", "dd.MM.yyyy HH:mm:ss") + "\n\n" +
-                          "Dilek & Not:\n" + data.message + "\n\n" +
-                          "-----------------------------------------";
-        var txtBlob = Utilities.newBlob(noteContent, "text/plain;charset=UTF-8", noteFileName);
-        var txtFile = mainFolder.createFile(txtBlob);
-        driveFileUrl = txtFile.getUrl();
-      } catch (noteErr) {
-        driveFileUrl = "Drive Not Kayıt Uyarısı: " + noteErr.toString();
-      }
-    }
-
-    // 4. Yalnızca Yazılı Anı Notlarında Google Sheets Tablosunu Aç ve Ekle (Fotoğraflar Tablo Açılışını Atlar)
-    if (data.type === "wish") {
-      try {
-        var sheet;
-        var sheetId = props.getProperty("sheetId");
-        if (sheetId) {
-          try {
-            var ssCached = SpreadsheetApp.openById(sheetId);
-            sheet = ssCached.getActiveSheet();
-          } catch(sErr) {}
-        }
-        if (!sheet) {
-          var sheetName = "Düğün Anı Defteri & Dilekler";
-          var files = mainFolder.getFilesByName(sheetName);
-          while (files.hasNext()) {
-            var existingFile = files.next();
-            if (!existingFile.isTrashed() && existingFile.getMimeType() === MimeType.GOOGLE_SHEETS) {
-              var ss = SpreadsheetApp.openById(existingFile.getId());
-              sheet = ss.getActiveSheet();
-              props.setProperty("sheetId", existingFile.getId());
-              break;
-            }
-          }
-          if (!sheet) {
-            var newSs = SpreadsheetApp.create(sheetName);
-            var sheetFile = DriveApp.getFileById(newSs.getId());
-            sheetFile.moveTo(mainFolder);
-            sheet = newSs.getActiveSheet();
-            sheet.appendRow(["Tarih & Saat", "Ad Soyad", "Yakınlık Derecesi", "Anı Türü", "Anı Mesajı / Notu", "Google Drive Dosya Bağlantısı"]);
-            sheet.getRange(1, 1, 1, 6).setFontWeight("bold").setBackground("#D4AF37").setFontColor("#FFFFFF");
-            props.setProperty("sheetId", newSs.getId());
-          }
-        }
-
-        var timeStr = Utilities.formatDate(new Date(), "GMT+3", "dd.MM.yyyy HH:mm:ss");
-        sheet.appendRow([
-          timeStr,
-          data.name || "Anonim Davetli",
-          data.side || "Ortak Arkadaş",
-          "✍️ Yazılı Not",
-          data.message || "",
-          driveFileUrl || "Drive Belgesi Oluşturuldu"
-        ]);
-      } catch (sheetErr) {}
     }
 
     return ContentService.createTextOutput(JSON.stringify({
       status: "success",
-      message: "Anı Google Drive'a başarıyla kaydedildi!",
+      message: "Medya Google Drive'a kaydedildi!",
       driveFileUrl: driveFileUrl
     })).setMimeType(ContentService.MimeType.JSON);
 
