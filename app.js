@@ -1258,8 +1258,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnExportMemories = document.getElementById('btnExportMemories');
     if (btnExportMemories) {
         btnExportMemories.addEventListener('click', () => {
-            const driveFolderUrl = 'https://drive.google.com/drive/folders/13Uqo9GA0NUC2oqgclKQJnb_QSCbnj0xb?usp=drive_link';
-            window.open(driveFolderUrl, '_blank');
             showToast('📁 Google Drive Anı Albümü klasörü açılıyor...', 'success');
         });
     }
