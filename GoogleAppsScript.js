@@ -112,11 +112,6 @@ function doPost(e) {
         decodedBlob.setName(fileName);
         
         var file = mainFolder.createFile(decodedBlob);
-        try {
-          file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
-        } catch (err) {
-          // İzin kısıtlaması durumunda varsayılan kalsın
-        }
         driveFileUrl = file.getUrl();
       } catch (mediaErr) {
         driveFileUrl = "Drive Yükleme Uyarısı: " + mediaErr.toString();

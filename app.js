@@ -425,7 +425,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 try {
                     let width = img.width;
                     let height = img.height;
-                    const maxDim = 2400; // Ultra HD / Retina Kalitesi (2400px max)
+                    const maxDim = 1600; // Ultra HD / Retina Netliği (1600px max, ~150KB boyut)
                     if (width > maxDim || height > maxDim) {
                         if (width > height) {
                             height = Math.round((height * maxDim) / width);
@@ -440,7 +440,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     canvas.height = height;
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0, width, height);
-                    resolve(canvas.toDataURL('image/jpeg', 0.88));
+                    resolve(canvas.toDataURL('image/jpeg', 0.80));
                 } catch (e) {
                     resolve(dataUrl);
                 }
@@ -602,9 +602,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 for (let i = 0; i < itemsToUpload.length; i++) {
                     const item = itemsToUpload[i];
 
-                    // Birden fazla fotoğraf/video yüklendiğinde Google Apps Script kilidini beklemek için sıralı bekleme
+                    // Birden fazla fotoğraf/video yüklendiğinde hızlı & seri aktarım için 300ms bekleme
                     if (i > 0) {
-                        await new Promise(r => setTimeout(r, 1500));
+                        await new Promise(r => setTimeout(r, 300));
                     }
 
                     item.status = 'sending';
