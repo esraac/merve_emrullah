@@ -362,7 +362,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const originalBtnText = btnSubmitWish ? btnSubmitWish.innerHTML : '<i class="fa-solid fa-paper-plane"></i> Anı Notunu Gönder';
             if (btnSubmitWish) {
                 btnSubmitWish.disabled = true;
-                btnSubmitWish.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Google Sheets'e Kaydediliyor...`;
+                btnSubmitWish.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Anı Gönderiliyor...`;
             }
 
             try {
@@ -638,7 +638,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     renderMediaPreviews();
 
                     const currentNum = completedCount + 1;
-                    const statusText = `⚡ Hepsi Eşzamanlı Yükleniyor (${currentNum}/${itemsToUpload.length})...`;
+                    const statusText = `⚡ Yükleniyor (${currentNum}/${itemsToUpload.length})...`;
                     if (btnSubmitMedia) {
                         btnSubmitMedia.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> ${statusText}`;
                     }
@@ -675,7 +675,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     } finally {
                         completedCount++;
                         if (btnSubmitMedia && completedCount < itemsToUpload.length) {
-                            btnSubmitMedia.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> ⚡ Eşzamanlı Yükleniyor (${completedCount}/${itemsToUpload.length})...`;
+                            btnSubmitMedia.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> ⚡ Yükleniyor (${completedCount}/${itemsToUpload.length})...`;
                         }
                     }
                 }));
