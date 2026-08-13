@@ -121,6 +121,28 @@ function doPost(e) {
       } catch (mediaErr) {
         driveFileUrl = "Drive Yükleme Uyarısı: " + mediaErr.toString();
       }
+    } else if (data.message) {
+      // 3.2 Yazılı Notlar İçin Google Drive Klasöründe Metin Belgesi (.txt) Oluştur
+      try {
+        var safeNameNote = (data.name || "Anonim").replace(/[^a-zA-Z0-9_\-]/g, "_");
+        var noteFileName = "Merve_Emrullah_" + safeNameNote + "_YaziliNot_" + Date.now() + ".txt";
+        var noteContent = "=========================================\n" +
+                          "MERVE & EMRULLAH DÜĞÜN ANI DEFTERİ NOTU\n" +
+                          "=========================================\n\n" +
+                          "Gönderen: " + (data.name || "Anonim Davetli") + "\n" +
+                          "Yakınlık Derecesi: " + (data.side || "Ortak Arkadaş") + "\n" +
+                          "Tarih & Saat: " + Utilities.formatDate(new Date(), "GMT+3", "dd.MM.yyyy HH:mm:ss") + "\n\n" +
+                          "Dilek & Not:\n" + data.message + "\n\n" +
+                          "-----------------------------------------";
+        var txtBlob = Utilities.newBlob(noteContent, "text/plain;charset=UTF-8", noteFileName);
+        var txtFile = mainFolder.createFile(txtBlob);
+        try {
+          txtFile.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+        } catch (e) {}
+        driveFileUrl = txtFile.getUrl();
+      } catch (noteErr) {
+        driveFileUrl = "Drive Not Kayıt Uyarısı: " + noteErr.toString();
+      }
     }
 
     // 4. Anı Türü ve Bilgileri Google Sheets Tablosuna Ekle

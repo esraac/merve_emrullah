@@ -323,19 +323,25 @@ document.addEventListener('DOMContentLoaded', () => {
         formWish.addEventListener('submit', async (e) => {
             e.preventDefault();
 
-            const name = document.getElementById('wishName').value.trim();
+            const nameInput = document.getElementById('wishName');
+            const nameVal = nameInput ? nameInput.value.trim() : '';
+            const name = nameVal || 'Anonim Davetli';
             const sideSelect = document.getElementById('wishSide');
             const side = sideSelect ? sideSelect.value : 'Ortak Arkadaş';
             const mood = '✨ Anı & Dilek Notu';
-            const message = document.getElementById('wishMessage').value.trim();
+            const messageInput = document.getElementById('wishMessage');
+            const message = messageInput ? messageInput.value.trim() : '';
 
-            if (!name || !message) return;
+            if (!message) {
+                showToast('Lütfen anı notunuzu yazın.', 'warning');
+                return;
+            }
 
             const btnSubmitWish = formWish.querySelector('button[type="submit"]');
             const originalBtnText = btnSubmitWish ? btnSubmitWish.innerHTML : '';
             if (btnSubmitWish) {
                 btnSubmitWish.disabled = true;
-                btnSubmitWish.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Gönderiliyor...`;
+                btnSubmitWish.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Google Drive'a Yükleniyor...`;
             }
 
             try {
@@ -357,12 +363,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 await sendToGoogleDrive(newMemory);
 
-                formWish.reset();
+                if (formWish) formWish.reset();
                 triggerConfetti();
-                showToast('✨ Anı notunuz Merve & Emrullah çiftine başarıyla gönderildi!', 'success');
+                showToast('✨ Anı notunuz hem Google Drive & Sheets\'e hem de galeriye başarıyla kaydedildi!', 'success');
             } catch (err) {
-                console.error('Wish submit error', err);
-                showToast('Anı notunuz kaydedildi!', 'success');
+                console.error('Wish submit error:', err);
+                showToast('✨ Anı notunuz galeriye kaydedildi!', 'success');
             } finally {
                 if (btnSubmitWish) {
                     btnSubmitWish.disabled = false;
