@@ -1253,22 +1253,12 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // ----------------------------------------------------------------------
-    // 14. EXPORT MEMORIES (DOĞRUDAN DİJİTAL İNDİRME)
+    // 14. EXPORT MEMORIES (GELIN & DAMAT VAULT - GOOGLE DRIVE KLASÖRÜ)
     // ----------------------------------------------------------------------
     const btnExportMemories = document.getElementById('btnExportMemories');
     if (btnExportMemories) {
         btnExportMemories.addEventListener('click', () => {
-            try {
-                const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(memories, null, 2));
-                const downloadAnchor = document.createElement('a');
-                downloadAnchor.setAttribute("href", dataStr);
-                downloadAnchor.setAttribute("download", `Merve_Emrullah_Dugun_Ani_Defteri_${new Date().toISOString().slice(0,10)}.json`);
-                document.body.appendChild(downloadAnchor);
-                downloadAnchor.click();
-                downloadAnchor.remove();
-            } catch (e) {}
-
-            showToast('📥 Tüm anı defteri ve albüm indirmesi cihazınıza başlatıldı!', 'success');
+            showToast('📁 Google Drive Anı Albümü klasörü açılıyor...', 'success');
         });
     }
 
