@@ -145,21 +145,17 @@ function doPost(e) {
       }
     }
 
-    // 4. Anı Türü ve Bilgileri Google Sheets Tablosuna Ekle
-    var timeStr = Utilities.formatDate(new Date(), "GMT+3", "dd.MM.yyyy HH:mm:ss");
-    var memoryTypeDisplay = "✍️ Yazılı Not";
-    if (data.type === "photo") memoryTypeDisplay = "📸 Fotoğraf";
-    else if (data.type === "video") memoryTypeDisplay = "🎥 Video";
-
-    if (sheet) {
+    // 4. Yalnızca Yazılı Anı Notlarını Google Sheets Tablosuna Ekle (Fotoğraf ve Videolar yalnızca Drive klasörüne düşer)
+    if (sheet && data.type === "wish") {
       try {
+        var timeStr = Utilities.formatDate(new Date(), "GMT+3", "dd.MM.yyyy HH:mm:ss");
         sheet.appendRow([
           timeStr,
           data.name || "Anonim Davetli",
           data.side || "Ortak Arkadaş",
-          memoryTypeDisplay,
-          data.message || (data.type === "video" ? "Düğünden harika bir video karesi!" : "Düğünden özel bir fotoğraf karesi!"),
-          driveFileUrl || "Yalnızca Yazılı Mesaj"
+          "✍️ Yazılı Not",
+          data.message || "",
+          driveFileUrl || "Drive Belgesi Oluşturuldu"
         ]);
       } catch (sheetErr) {
         // Tablo yazma hatası durumunda dosya kaydını bozma
