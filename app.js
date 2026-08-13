@@ -543,7 +543,7 @@ document.addEventListener('DOMContentLoaded', () => {
             div.innerHTML = `
                 ${mediaContent}
                 ${badgeContent}
-                <button type="button" class="btn-remove-preview" data-index="${index}">&times;</button>
+                <button type="button" class="btn-remove-preview" data-index="${index}"><i class="fa-solid fa-xmark"></i></button>
             `;
 
             mediaPreviewGrid.appendChild(div);
