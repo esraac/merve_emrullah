@@ -425,7 +425,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 try {
                     let width = img.width;
                     let height = img.height;
-                    const maxDim = 1600; // Ultra HD / Retina Netliği (1600px max, ~150KB boyut)
+                    const maxDim = 1280; // HD Netlik (1280px max, ~80KB turbo boyut)
                     if (width > maxDim || height > maxDim) {
                         if (width > height) {
                             height = Math.round((height * maxDim) / width);
@@ -440,7 +440,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     canvas.height = height;
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0, width, height);
-                    resolve(canvas.toDataURL('image/jpeg', 0.80));
+                    resolve(canvas.toDataURL('image/jpeg', 0.75));
                 } catch (e) {
                     resolve(dataUrl);
                 }
