@@ -681,13 +681,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Seçili fotoğrafları ve önizleme kutularını ANINDA ekrandan sil ve sıfırla
                 clearMediaSelection();
 
-                document.title = '✅ Hepsi Gönderildi! - Merve & Emrullah';
-                sendSystemNotification('Merve & Emrullah Düğün Anıları', `🎉 Hepsi gönderildi! ${successCount} adet medya Google Drive'a başarıyla yüklendi!`);
+                document.title = '✅ Başarıyla Gönderildi! - Merve & Emrullah';
+                sendSystemNotification('Merve & Emrullah Düğün Anıları', '🎉 Başarıyla gönderildi!');
                 setTimeout(() => { document.title = defaultPageTitle; }, 5000);
 
                 if (successCount > 0) {
                     triggerConfetti();
-                    showToast(`🎉 Hepsi gönderildi! ${successCount} adet medya başarıyla yüklendi.`, 'success');
+                    showToast('🎉 Başarıyla gönderildi!', 'success');
                 } else {
                     showToast('❌ Fotoğraflar Google Drive\'a yüklenemedi. Lütfen internet bağlantınızı ve Drive ayarlarını kontrol edin.', 'error');
                 }
@@ -696,7 +696,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 saveMemories();
                 clearMediaSelection();
                 triggerConfetti();
-                showToast('🎉 Hepsi gönderildi! Fotoğraf ve videolarınız yüklendi.', 'success');
+                showToast('🎉 Başarıyla gönderildi!', 'success');
             } finally {
                 clearMediaSelection();
                 if (btnSubmitMedia) {
