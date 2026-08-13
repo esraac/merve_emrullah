@@ -347,11 +347,7 @@ button {
     position: relative;
     z-index: 2;
     max-width: 850px;
-    width: 100%;
     margin: 0 auto;
-    padding: 0 0.5rem;
-    box-sizing: border-box;
-    overflow-x: hidden;
     text-shadow: 0 4px 18px rgba(0, 0, 0, 0.85);
 }
 
@@ -370,8 +366,6 @@ button {
     text-transform: uppercase;
     margin-bottom: 1.5rem;
     animation: fadeInDown 1s ease;
-    max-width: 100%;
-    box-sizing: border-box;
 }
 
 .hero-title {
@@ -410,8 +404,6 @@ button {
     border-radius: var(--radius-md);
     padding: 1.2rem 2rem;
     display: inline-block;
-    max-width: 100%;
-    box-sizing: border-box;
     margin-bottom: 2.5rem;
     box-shadow: 0 15px 35px rgba(0,0,0,0.3);
 }
@@ -424,13 +416,9 @@ button {
     border-radius: var(--radius-lg);
     padding: 1.8rem 2.5rem;
     max-width: 720px;
-    width: 100%;
-    box-sizing: border-box;
     margin: 0 auto 2.5rem auto;
     box-shadow: 0 15px 40px rgba(212, 175, 55, 0.35);
     animation: pulseGlow 3s infinite ease-in-out;
-    word-break: break-word;
-    overflow-wrap: break-word;
 }
 
 .live-pulse-badge {
@@ -2380,16 +2368,7 @@ button {
 @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes slideInRight { from { opacity: 0; transform: translateX(50px); } to { opacity: 1; transform: translateX(0); } }
-@keyframes pulseGlow {
-    0%, 100% {
-        box-shadow: 0 8px 25px rgba(212, 175, 55, 0.35);
-        border-color: var(--gold-primary);
-    }
-    50% {
-        box-shadow: 0 14px 40px rgba(212, 175, 55, 0.75);
-        border-color: #FFF5D6;
-    }
-}
+@keyframes pulseGlow { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.15); opacity: 0.8; } }
 @keyframes pulseRed { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.08); } }
 @keyframes heartPop { 0% { transform: scale(1); } 50% { transform: scale(1.3); } 100% { transform: scale(1); } }
 @keyframes waveBounce { 0% { height: 10px; } 100% { height: 45px; } }
@@ -2519,124 +2498,90 @@ button {
     }
 
     .hero-section {
-        padding: 4.5rem 0.5rem 1.5rem 0.5rem;
+        padding: 6.5rem 1rem 2.5rem 1rem;
         background-position: center 30% !important;
-        overflow-x: hidden;
-        width: 100%;
-        max-width: 100vw;
-    }
-
-    .hero-container {
-        width: 100%;
-        max-width: 100%;
-        padding: 0 0.2rem;
-        box-sizing: border-box;
     }
 
     .hero-badge {
-        font-size: 0.68rem;
-        padding: 0.25rem 0.6rem;
-        margin-bottom: 0.4rem;
-        max-width: 100%;
-        box-sizing: border-box;
-        letter-spacing: 0.5px;
-        white-space: normal;
-        text-align: center;
+        font-size: 0.78rem;
+        padding: 0.4rem 0.9rem;
     }
 
     .hero-title {
-        font-size: 1.65rem;
+        font-size: 1.85rem;
         letter-spacing: -0.5px;
-        margin-bottom: 0.2rem;
-        word-break: break-word;
-        overflow-wrap: break-word;
     }
 
     .hero-subtitle {
-        font-size: 0.88rem;
-        line-height: 1.35;
-        margin-bottom: 0.4rem;
+        font-size: 0.95rem;
+        line-height: 1.5;
+        margin-bottom: 1rem;
     }
 
     /* Romantic Quote Ribbon on Mobile */
     .stats-bar {
-        margin-top: -1.2rem;
-        margin-bottom: 1.2rem;
+        margin-top: -1.5rem;
+        margin-bottom: 1.5rem;
     }
 
     .romantic-quote-container {
-        padding: 0.5rem 0.8rem;
-        gap: 0.4rem;
-        max-width: 92%;
+        padding: 0.55rem 1.0rem;
+        gap: 0.45rem;
+        max-width: 90%;
         margin: 0 auto;
     }
 
     .romantic-quote-text {
-        font-size: 0.88rem;
-        line-height: 1.3;
+        font-size: 0.92rem;
+        line-height: 1.35;
     }
 
     .quote-sparkle-left,
     .quote-sparkle-right {
-        font-size: 0.78rem;
+        font-size: 0.82rem;
     }
 
     .hero-description {
-        font-size: 0.8rem;
-        line-height: 1.4;
-        margin: 0 auto 0.6rem auto;
-        padding: 0;
-        max-width: 100%;
-        box-sizing: border-box;
+        font-size: 0.9rem;
+        line-height: 1.65;
+        margin: 0 auto 1.5rem auto;
+        padding: 0 0.4rem;
+        max-width: 96%;
         color: #E2E8F0;
     }
 
-    /* Wedding Live Banner & Countdown Grid on Phone */
+    /* Countdown Grid & Live Banner on Phone */
+    .countdown-card {
+        padding: 1.2rem 0.8rem;
+        border-radius: var(--radius-md);
+        max-width: 98%;
+    }
+
     .wedding-live-banner {
-        padding: 0.6rem 0.5rem;
-        margin: 0 auto 0.8rem auto;
-        border-radius: 10px;
-        width: 100%;
-        max-width: 100%;
-        box-sizing: border-box;
-        word-break: break-word;
-        overflow-wrap: break-word;
+        padding: 1.1rem 0.8rem;
+        max-width: 98%;
+        margin: 0 auto 1.8rem auto;
+        border-radius: var(--radius-md);
+        box-shadow: 0 10px 25px rgba(212, 175, 55, 0.25);
     }
 
     .live-pulse-badge {
-        font-size: 0.62rem;
-        padding: 0.15rem 0.5rem;
-        letter-spacing: 0.5px;
-        margin-bottom: 0.3rem;
+        font-size: 0.72rem;
+        padding: 0.25rem 0.75rem;
+        letter-spacing: 1px;
+        margin-bottom: 0.6rem;
         max-width: 100%;
-        box-sizing: border-box;
-        white-space: normal;
-        text-align: center;
-        justify-content: center;
     }
 
     .live-text-title {
-        font-size: 0.88rem;
-        line-height: 1.2;
-        margin-bottom: 0.2rem;
-        word-break: break-word;
-        overflow-wrap: break-word;
+        font-size: 1.12rem;
+        line-height: 1.35;
+        margin-bottom: 0.5rem;
     }
 
     .live-text-sub {
-        font-size: 0.74rem;
-        line-height: 1.3;
-        color: #CBD5E1;
-        word-break: break-word;
-        overflow-wrap: break-word;
-    }
-
-    .countdown-card {
-        padding: 1rem 0.4rem;
-        border-radius: var(--radius-md);
-        width: 100%;
-        max-width: 100%;
-        box-sizing: border-box;
+        font-size: 0.85rem;
+        line-height: 1.45;
     }
 
     .countdown-grid {
