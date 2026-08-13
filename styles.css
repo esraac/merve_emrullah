@@ -201,6 +201,12 @@ button {
     gap: 0.8rem;
 }
 
+.nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+}
+
 .nav-link {
     font-size: 0.92rem;
     font-weight: 600;
@@ -2491,23 +2497,10 @@ button {
         box-shadow: 0 3px 10px rgba(212, 175, 55, 0.4);
     }
 
-    .theme-toggle {
-        width: 100%;
-        height: 44px;
-        border-radius: 16px;
-        background: rgba(212, 175, 55, 0.1);
-        border: 1px solid rgba(212, 175, 55, 0.28);
-        color: var(--gold-light);
-        margin-top: 0.2rem;
-        justify-content: center;
+    .nav-actions {
+        display: flex;
+        align-items: center;
         gap: 0.6rem;
-    }
-
-    .theme-toggle-label {
-        display: inline-block;
-        font-size: 0.88rem;
-        font-weight: 600;
-        color: var(--gold-light);
     }
 
     .nav-btn-gold, .nav-btn-outline {
