@@ -2380,7 +2380,16 @@ button {
 @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes slideInRight { from { opacity: 0; transform: translateX(50px); } to { opacity: 1; transform: translateX(0); } }
-@keyframes pulseGlow { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.15); opacity: 0.8; } }
+@keyframes pulseGlow {
+    0%, 100% {
+        box-shadow: 0 8px 25px rgba(212, 175, 55, 0.35);
+        border-color: var(--gold-primary);
+    }
+    50% {
+        box-shadow: 0 14px 40px rgba(212, 175, 55, 0.75);
+        border-color: #FFF5D6;
+    }
+}
 @keyframes pulseRed { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.08); } }
 @keyframes heartPop { 0% { transform: scale(1); } 50% { transform: scale(1.3); } 100% { transform: scale(1); } }
 @keyframes waveBounce { 0% { height: 10px; } 100% { height: 45px; } }
