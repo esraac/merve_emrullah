@@ -453,9 +453,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             const isVideo = file.type.startsWith('video/');
-            if (isVideo && file.size > 25 * 1024 * 1024) {
-                showToast('⚠️ Video boyutu 25MB\'dan büyük. Hızlı yükleme için daha kısa bir video tercih edebilirsiniz.', 'warning');
-            }
 
             const itemObj = {
                 id: 'media_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6),
@@ -664,8 +661,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!url) return false;
 
         try {
-            // Yavaş mobil ağlarda erken zaman aşımına (AbortError) düşmemesi için 90 saniyelik güvenli süre
-            const timeoutMs = 90000;
+            // Videolar için 5 dakika (300 saniye), fotoğraflar için 90 saniye güvenli zaman aşımı
+            const isVideo = memory.type === 'video' || (memory.mediaUrl && memory.mediaUrl.startsWith('data:video/'));
+            const timeoutMs = isVideo ? 300000 : 90000;
             const controller = new AbortController();
             const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
