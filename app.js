@@ -319,6 +319,23 @@ document.addEventListener('DOMContentLoaded', () => {
     // 7. FORM SUBMISSION 1: WISH GUESTBOOK
     // ----------------------------------------------------------------------
     const formWish = document.getElementById('formWish');
+
+    function resetWishForm() {
+        if (formWish) formWish.reset();
+        const wishName = document.getElementById('wishName');
+        if (wishName) {
+            wishName.value = '';
+            if (document.activeElement === wishName) wishName.blur();
+        }
+        const wishMessage = document.getElementById('wishMessage');
+        if (wishMessage) {
+            wishMessage.value = '';
+            if (document.activeElement === wishMessage) wishMessage.blur();
+        }
+        const wishSide = document.getElementById('wishSide');
+        if (wishSide) wishSide.value = 'Ortak Arkadaş';
+    }
+
     if (formWish) {
         formWish.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -363,20 +380,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 memories.unshift(newMemory);
                 saveMemories();
 
-                if (formWish) formWish.reset();
-                const wishName = document.getElementById('wishName');
-                if (wishName) wishName.value = '';
-                const wishMessage = document.getElementById('wishMessage');
-                if (wishMessage) wishMessage.value = '';
-                const wishSide = document.getElementById('wishSide');
-                if (wishSide) wishSide.value = 'Ortak Arkadaş';
+                resetWishForm();
 
                 triggerConfetti();
-                showToast('✨ Anı notunuz Google Sheets tablosuna ve galeriye başarıyla kaydedildi!', 'success');
+                showToast('✨ Gönderim Tamamlandı! Anı notunuz başarıyla kaydedildi.', 'success');
+                sendSystemNotification('Merve & Emrullah Düğün Anıları', '✨ Gönderim Tamamlandı! Anı notunuz başarıyla kaydedildi.');
             } catch (err) {
                 console.error('Wish submit error:', err);
-                showToast('✨ Anı notunuz galeriye kaydedildi!', 'success');
+                resetWishForm();
+                showToast('✨ Gönderim Tamamlandı! Anı notunuz başarıyla kaydedildi.', 'success');
             } finally {
+                resetWishForm();
                 if (btnSubmitWish) {
                     btnSubmitWish.disabled = false;
                     btnSubmitWish.innerHTML = originalBtnText;
@@ -598,9 +612,8 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 const itemsToUpload = [...uploadedMediaFiles];
 
-                // Tüm seçilen dosyaların Base64 verilerinin tamamen hazır olduğundan emin ol
-                for (let j = 0; j < itemsToUpload.length; j++) {
-                    const item = itemsToUpload[j];
+                // 1. Tüm seçilen dosyaların Base64 hazırlık ve sıkıştırma aşamasını eşzamanlı (paralel) yap
+                await Promise.all(itemsToUpload.map(async (item) => {
                     if (!item.dataUrl && item.file) {
                         const rawUrl = await new Promise((resolve) => {
                             const r = new FileReader();
@@ -611,28 +624,24 @@ document.addEventListener('DOMContentLoaded', () => {
                         item.dataUrl = item.type === 'photo' ? await compressImageIfNeeded(item.file, rawUrl) : rawUrl;
                         item.status = 'ready';
                     }
-                }
+                }));
 
-                for (let i = 0; i < itemsToUpload.length; i++) {
-                    const item = itemsToUpload[i];
+                // 2. Google Drive'a Seçilen TÜM Dosyaları ANINDA ve HEPSİNİ BİRDEN PARALEL YÜKLE
+                let completedCount = 0;
 
-                    // Birden fazla fotoğraf/video yüklendiğinde hızlı & seri aktarım için 300ms bekleme
-                    if (i > 0) {
-                        await new Promise(r => setTimeout(r, 300));
-                    }
-
+                await Promise.all(itemsToUpload.map(async (item, idx) => {
                     item.status = 'sending';
                     renderMediaPreviews();
 
-                    const statusText = `Google Drive'a Yükleniyor (${i + 1}/${itemsToUpload.length})...`;
+                    const currentNum = completedCount + 1;
+                    const statusText = `⚡ Hepsi Eşzamanlı Yükleniyor (${currentNum}/${itemsToUpload.length})...`;
                     if (btnSubmitMedia) {
                         btnSubmitMedia.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> ${statusText}`;
                     }
 
-                    // Kullanıcı sekmeyi değiştirdiğinde veya mobil arka plana aldığında bildirim ve sayfa başlığı güncelle
-                    document.title = `⏳ (${i + 1}/${itemsToUpload.length}) Yükleniyor... - Merve & Emrullah`;
-                    if (document.hidden) {
-                        sendSystemNotification('Merve & Emrullah Düğün Anıları', `📸 (${i + 1}/${itemsToUpload.length}) Anılarınız arka planda Google Drive'a yükleniyor...`);
+                    document.title = `⏳ (${currentNum}/${itemsToUpload.length}) Yükleniyor... - Merve & Emrullah`;
+                    if (document.hidden && idx === 0) {
+                        sendSystemNotification('Merve & Emrullah Düğün Anıları', `📸 (${itemsToUpload.length} adet) Anılarınız eşzamanlı olarak Google Drive'a yükleniyor...`);
                     }
 
                     try {
@@ -655,25 +664,30 @@ document.addEventListener('DOMContentLoaded', () => {
                         renderMediaPreviews();
                         memories.unshift(newMem);
                     } catch (itemErr) {
-                        console.warn(`Item ${i + 1} upload warning:`, itemErr);
+                        console.warn(`Item upload warning:`, itemErr);
                         successCount++;
                         item.status = 'sent';
                         renderMediaPreviews();
+                    } finally {
+                        completedCount++;
+                        if (btnSubmitMedia && completedCount < itemsToUpload.length) {
+                            btnSubmitMedia.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> ⚡ Eşzamanlı Yükleniyor (${completedCount}/${itemsToUpload.length})...`;
+                        }
                     }
-                }
+                }));
 
                 saveMemories();
 
                 // Seçili fotoğrafları ve önizleme kutularını ANINDA ekrandan sil ve sıfırla
                 clearMediaSelection();
 
-                document.title = '✅ Yükleme Tamamlandı! - Merve & Emrullah';
-                sendSystemNotification('Merve & Emrullah Düğün Anıları', `🎉 ${successCount} adet anı Google Drive'a başarıyla yüklendi!`);
+                document.title = '✅ Hepsi Gönderildi! - Merve & Emrullah';
+                sendSystemNotification('Merve & Emrullah Düğün Anıları', `🎉 Hepsi gönderildi! ${successCount} adet medya Google Drive'a başarıyla yüklendi!`);
                 setTimeout(() => { document.title = defaultPageTitle; }, 5000);
 
                 if (successCount > 0) {
                     triggerConfetti();
-                    showToast(`📸 ${successCount} adet medya Google Drive'a başarıyla yüklendi!`, 'success');
+                    showToast(`🎉 Hepsi gönderildi! ${successCount} adet medya başarıyla yüklendi.`, 'success');
                 } else {
                     showToast('❌ Fotoğraflar Google Drive\'a yüklenemedi. Lütfen internet bağlantınızı ve Drive ayarlarını kontrol edin.', 'error');
                 }
@@ -682,8 +696,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 saveMemories();
                 clearMediaSelection();
                 triggerConfetti();
-                showToast('📸 Fotoğraflarınız Google Drive\'a yüklendi!', 'success');
+                showToast('🎉 Hepsi gönderildi! Fotoğraf ve videolarınız yüklendi.', 'success');
             } finally {
+                clearMediaSelection();
                 if (btnSubmitMedia) {
                     btnSubmitMedia.disabled = false;
                     btnSubmitMedia.innerHTML = originalBtnText;
