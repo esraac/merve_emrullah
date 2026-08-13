@@ -354,25 +354,19 @@ document.addEventListener('DOMContentLoaded', () => {
                     timestamp: new Date().toISOString()
                 };
 
-                // Gönderim gerçekleşirken butonun görünür loading aşamasını göstermek için en az 800ms bekle
-                const drivePromise = sendToGoogleDrive(newMemory);
-                const delayPromise = new Promise(resolve => setTimeout(resolve, 800));
-                
-                await Promise.all([drivePromise, delayPromise]);
+                // Form alanlarını ANINDA temizle (kullanıcı beklemez)
+                if (formWish) formWish.reset();
+                if (nameInput) nameInput.value = '';
+                if (messageInput) messageInput.value = '';
 
                 memories.unshift(newMemory);
                 saveMemories();
 
-                if (formWish) formWish.reset();
-                const wishName = document.getElementById('wishName');
-                if (wishName) wishName.value = '';
-                const wishMessage = document.getElementById('wishMessage');
-                if (wishMessage) wishMessage.value = '';
-                const wishSide = document.getElementById('wishSide');
-                if (wishSide) wishSide.value = 'Ortak Arkadaş';
-
                 triggerConfetti();
                 showToast('✨ Anı notunuz Google Sheets tablosuna ve galeriye başarıyla kaydedildi!', 'success');
+
+                // Arka planda Google Sheets'e kaydet
+                sendToGoogleDrive(newMemory);
             } catch (err) {
                 console.error('Wish submit error:', err);
                 showToast('✨ Anı notunuz galeriye kaydedildi!', 'success');
