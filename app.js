@@ -260,19 +260,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setInterval(updateCountdown, 1000);
     updateCountdown();
 
-    // Toggle button event for manual testing
-    const btnToggleLiveTest = document.getElementById('btnToggleLiveTest');
-    if (btnToggleLiveTest) {
-        btnToggleLiveTest.addEventListener('click', () => {
-            isManualLiveTestMode = !isManualLiveTestMode;
-            updateCountdown();
-            if (isManualLiveTestMode) {
-                showToast('⚡ Düğün Anı Canlı Modu Aktifleştirildi! (Geri Sayım Durdu)', 'success');
-            } else {
-                showToast('⏱️ Düğün Öncesi Geri Sayım Moduna Dönüldü.', 'info');
-            }
-        });
-    }
+
 
     // ----------------------------------------------------------------------
     // 5. STATS BAR COUNTER
